@@ -17,9 +17,15 @@ interface NavDef { to: string; icon: string; label: string; count?: number; hot?
 function NavItem({ n, onGo }: { n: NavDef; onGo: () => void }) {
   return (
     <NavLink to={n.to} end={n.end} className="nav-item" data-tip={n.label} onClick={onGo}>
-      <Icon name={n.icon} />
-      <span className="label">{n.label}</span>
-      {n.count ? <span className={`count ${n.hot ? 'hot' : ''}`} aria-label={`${n.count} new`}>{n.count}</span> : null}
+      {({ isActive }) => (
+        <>
+          {/* One highlight shared by every item: it glides to the new page instead of blinking. */}
+          {isActive && <motion.span layoutId="nav-active" className="nav-active" aria-hidden="true" transition={{ type: 'spring', stiffness: 520, damping: 42 }} />}
+          <Icon name={n.icon} />
+          <span className="label">{n.label}</span>
+          {n.count ? <span className={`count ${n.hot ? 'hot' : ''}`} aria-label={`${n.count} new`}>{n.count}</span> : null}
+        </>
+      )}
     </NavLink>
   );
 }

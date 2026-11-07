@@ -14,6 +14,7 @@ import { Gate, useNav } from './pages';
 import { useSemora } from './store';
 import { SEASONS, type Season } from './theme';
 import { CourseTag, Empty, Icon, Morph, SourceBadge, clock, hue } from './ui';
+import { BlurText, NumberTicker, spotlight } from './fx';
 
 const stagger = (k: number) => ({ initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.32, delay: 0.04 + k * 0.05, ease: [0.2, 0.7, 0.2, 1] as const } });
 const mb = (b: number) => `${(b / 1_000_000).toFixed(1)} MB`;
@@ -76,14 +77,24 @@ function DashboardView({ state }: { state: SemoraState }) {
     <>
       <header className="page-head">
         <p className="eyebrow">{new Date(`${today}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · times in ET{state.demoMode ? ' · seeded demo data' : ''}</p>
-        <h1 className="t-title">{state.brief.greeting}</h1>
-        <p className="summary">
-          <span><b>{due}</b> due this week</span><span className="sep">·</span>
-          <span><b>{changedItems.length}</b> changed</span><span className="sep">·</span>
-          <span><b>{waiting}</b> waiting on you</span><span className="sep">·</span>
-          <span><b>{fin.summary.attention}</b> billing alerts</span>
-        </p>
+        <h1 className="t-title t-display"><BlurText text={state.brief.greeting} /></h1>
       </header>
+      <ul className="stats" aria-label="At a glance">
+        {([
+          { n: due, label: 'due this week', to: '/week' },
+          { n: changedItems.length, label: 'changed', to: '/changed', hot: changedItems.length > 0 },
+          { n: waiting, label: 'waiting on you', to: '/waiting' },
+          { n: fin.summary.attention, label: 'billing alerts', to: '/subscriptions', warn: fin.summary.attention > 0 },
+        ] as const).map((t, k) => (
+          <motion.li key={t.to} {...stagger(k)}>
+            <Link to={t.to} className="stat spotlight" data-tone={'hot' in t && t.hot ? 'hot' : 'warn' in t && t.warn ? 'warn' : undefined} {...spotlight}>
+              <NumberTicker className="stat-n" value={t.n} />
+              <span className="stat-label">{t.label}</span>
+              <span className="stat-go" aria-hidden="true">→</span>
+            </Link>
+          </motion.li>
+        ))}
+      </ul>
       <BriefCard state={state} />
       <div className="dash">
         <div className="dash-main">
@@ -134,21 +145,21 @@ function DashboardView({ state }: { state: SemoraState }) {
         <aside className="dash-side">
           {trialsEndingSoon(state).filter((s) => !s.acknowledged).slice(0, 1).map((s) => <TrialAlert key={s.id} sub={s} state={state} />)}
 
-          <motion.section className="panel" {...stagger(1)}>
+          <motion.section className="panel spotlight" {...stagger(1)} {...spotlight}>
             <div className="panel-head"><h2>Coming up</h2><Link className="linkout" to="/week">This week →</Link></div>
             {upcoming.length ? <ul className="mini-list">{upcoming.map((i) => (
               <li key={i.id}><span className="t-mono t-small">{fmtDate(i.start!.date!).slice(0, 3)} {fmtTime(i.start!.time!).replace(':00', '')}</span><span>{i.title.split(' — ')[0]}{i.location ? <span className="muted"> · {i.location}</span> : null}</span></li>
             ))}</ul> : <p className="t-small">Nothing on the calendar in the next three days.</p>}
           </motion.section>
 
-          <motion.section className="panel" {...stagger(2)}>
+          <motion.section className="panel spotlight" {...stagger(2)} {...spotlight}>
             <div className="panel-head"><h2>Subscriptions</h2><Link className="linkout" to="/subscriptions">Manage →</Link></div>
-            <p className="panel-figure"><b>{fmtMoney(fin.summary.monthly, 'USD')}</b><span className="t-small"> /mo estimated · {fin.summary.counted} counted</span></p>
+            <p className="panel-figure"><b><NumberTicker value={fin.summary.monthly} format={(n) => fmtMoney(n, 'USD')} /></b><span className="t-small"> /mo estimated · {fin.summary.counted} counted</span></p>
             {nextRenew && <p className="t-small">Next renewal: {nextRenew.name}, {fmtDate(nextRenew.renewsOn!)} · {fmtPrice(nextRenew.amount, nextRenew.currency, nextRenew.interval)}</p>}
             <Bars title="Monthly cost by subscription" empty="No counted subscriptions." data={fin.summary.breakdown.slice().sort((a, b) => b.monthly - a.monthly).slice(0, 4).map((b) => ({ id: b.subscriptionId, label: b.name.replace(/ (Premium|Individual|Student).*$/, ''), value: b.monthly, display: `${fmtMoney(b.monthly, 'USD')}`, onClick: () => openItem(b.subscriptionId) }))} />
           </motion.section>
 
-          <motion.section className="panel" {...stagger(3)}>
+          <motion.section className="panel spotlight" {...stagger(3)} {...spotlight}>
             <div className="panel-head"><h2>Inbox health</h2><Link className="linkout" to="/storage">Clean up →</Link></div>
             <p className="t-small">{h.total} messages · <b style={{ color: 'var(--text)' }}>{h.actionable}</b> tied to something you need to do · {h.promotional} promos · {h.spam.count} in spam</p>
             <div className="health-bar" role="img" aria-label={h.categories.map((c) => `${c.label} ${c.count}`).join(', ')}>
