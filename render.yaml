@@ -1,0 +1,12 @@
+# Render Blueprint: New → Blueprint → pick this repo. Runs the seeded demo with no secrets.
+services:
+  - type: web
+    name: semora
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: OPENROUTER_API_KEY
+        sync: false

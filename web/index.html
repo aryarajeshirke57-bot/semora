@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Semora — Everything important, finally in sync</title>
+    <meta name="description" content="Semora reads Canvas, Gmail, Calendar, Gradescope, Piazza and Ed, decides which message wins, and shows what changed, what needs action, and why." />
+    <meta name="theme-color" content="#292421" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23292421'/%3E%3Cpath d='M10 16.5l4 4 8-9' stroke='%23D6C3AE' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <script>
+      // Same rules as web/src/theme.ts, inline so the first paint already has the right theme.
+      try {
+        var t = localStorage.getItem('semora-theme'), se = localStorage.getItem('semora-season'), r = document.documentElement;
+        var dark = t === 'dark' || ((t !== 'light') && matchMedia('(prefers-color-scheme: dark)').matches);
+        if (t === 'light' || t === 'dark') r.setAttribute('data-theme', t);
+        r.setAttribute('data-scheme', dark ? 'dark' : 'light');
+        if (['autumn', 'winter', 'spring', 'summer'].indexOf(se) >= 0) r.setAttribute('data-season', se);
+        if (localStorage.getItem('semora-sidebar') === 'compact') r.setAttribute('data-sidebar', 'compact');
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
