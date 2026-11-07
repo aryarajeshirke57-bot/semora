@@ -243,3 +243,15 @@ Students also lose track of what their inbox commits them to: trials that conver
 - **Spam** is flagged on messages and excluded from academic and Money reconciliation (tested byte-identical).
 - **Assistant.** New deterministic handlers (priorities, catch-up, replies, drafts, course changes, which deadline wins) run before the LLM; answers mark estimates and Semora's own judgments; drafts are text plus a Gmail compose link, never sent.
 - **Routes.** `/` is the Dashboard; This Week moved to `/week`; `/money` redirects to `/subscriptions`.
+
+## 13. A custom-designed feel: display type and signature effects
+
+Goal: the app worked and was warm, but read as a well-made generic dashboard (one sans everywhere, numbers as inline text, flat surfaces). The ask was "award-winning, custom-designed", using Motion plus a few React Bits / Magic UI components, without breaking the demo or Render Free.
+
+| Option | Trade-offs |
+| --- | --- |
+| A. Install Magic UI / React Bits through their shadcn-style CLI | Fastest path to their exact components, but both assume Tailwind. Adding Tailwind means a second styling system beside `styles.css` tokens, a PostCSS step, and components that ignore seasons and dark mode unless rewritten anyway. |
+| **B. Port a few chosen components onto Semora's tokens + Motion, add one display serif** | `web/src/fx.tsx` holds four adapted effects (Number Ticker, Blur Text, Spotlight Card, Border Beam), each a few lines on CSS variables and the Motion we already ship. Fraunces (self-hosted via `@fontsource-variable`, latin subsets only, ~67 KB woff2) gives the editorial voice. No new runtime dependency besides the font; +~1 KB gzipped JS. |
+| C. Leave components alone; only restyle CSS | Lowest risk, but nothing moves with purpose, and the dashboard's numbers stay buried in a sentence. |
+
+**Choice: B.** Each effect explains state rather than decorating it: the greeting focuses in on arrival, the four at-a-glance numbers count up and become doors to their views, a slow beam circles the Morning Brief only until you open it, the sidebar highlight glides to the page you chose (Motion `layoutId`), and a warm spotlight follows the pointer on dashboard panels. Fraunces is limited to titles, the brand and big figures; all UI text stays Inter. Everything stops under `prefers-reduced-motion`, text content is unchanged (smoke test reads `Good morning…`), and the font ships inside the build, so the Render container needs no network for it.

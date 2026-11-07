@@ -33,3 +33,10 @@ Reviewer's top 3, all implemented (plus two small sheet leftovers: left-aligned 
 Before: `screenshots/round2/light-desktop-inbox.png`, `screenshots/round2/light-desktop-course-15-122.png`
 After: `screenshots/round3/light-desktop-inbox.png`, `screenshots/round3/light-desktop-course-15-122.png`
 Tests: 27/27 pass, typecheck and lint clean, no console errors.
+
+## Round 4: custom-designed feel (PLAN.md decision 13)
+1. **Editorial display type.** Fraunces (self-hosted) for page titles, sheet titles, the brand and big figures; Inter stays for UI. Paper grain under the ambient wash.
+2. **Dashboard at a glance.** The summary sentence became four tiles with counting numbers (Magic UI Number Ticker pattern) that link to This Week, Changes, Waiting and Subscriptions; the greeting focuses in word by word (React Bits Blur Text pattern).
+3. **Purposeful motion.** Sidebar highlight glides between pages (Motion `layoutId`); a border beam (Magic UI) circles the Morning Brief until it's opened; dashboard panels and tiles get a pointer spotlight (React Bits Spotlight Card). Subscriptions' monthly total counts up.
+Also: added the missing `.gitignore` (node_modules, dist, .data, .env).
+Verified: `npm run check` (90/90), `npm run build`, `npm run smoke` against dev and the production server, full screenshot walk via `npm run screenshots -- polish-fx` (light, dark, phone; output is local, not committed): no console errors, page errors or overflow.

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import type { BriefLine, BriefSection, SemoraState } from '../../engine/types';
 import { useSemora } from './store';
+import { BorderBeam } from './fx';
 import { Icon, Sources } from './ui';
 
 const HEAD: Record<BriefSection, string> = { changed: 'Changed', soon: 'Next 48 hours', decide: 'Your call', money: 'Money', heads_up: 'Heads-up' };
@@ -104,6 +105,7 @@ export function BriefCard({ state }: { state: SemoraState }) {
         <span className="t-small">{b.headline}</span>
       </span>
       {fresh > 0 ? <span className="chip accent">{fresh} new since your brief</span> : <span className="t-small t-mono">~{b.readSeconds} sec</span>}
+      {briefSeen.size === 0 && <BorderBeam />}
     </motion.button>
   );
 }

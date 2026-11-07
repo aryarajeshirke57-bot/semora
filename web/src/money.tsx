@@ -6,6 +6,7 @@ import { fmtMoney, fmtPrice } from '../../engine/finance';
 import { addDays, fmtDate, localDate } from '../../engine/time';
 import type { SemoraState, FinanceAlert, FinanceAlertKind, Subscription, SubscriptionStatus } from '../../engine/types';
 import { useSemora } from './store';
+import { NumberTicker } from './fx';
 import { Empty, ErrorState, Icon, Morph, Skeleton, SourceBadge, clock } from './ui';
 
 export const SUB_STATUS: Record<SubscriptionStatus, { label: string; cls: string }> = {
@@ -106,7 +107,7 @@ function MoneyView({ state }: { state: SemoraState }) {
         <p className="eyebrow">From {emailCount} billing emails · estimates, not bank records</p>
         <h1 className="t-title">Subscriptions</h1>
         <div className="money-figure">
-          <span className="big">{fmtMoney(sum.monthly, 'USD')}</span>
+          <span className="big"><NumberTicker value={sum.monthly} format={(n) => fmtMoney(n, 'USD')} /></span>
           <span className="t-small">a month, estimated · <b className="t-mono" style={{ color: 'var(--text)' }}>{fmtMoney(sum.annual, 'USD')}</b> a year</span>
         </div>
         <p className="summary">
